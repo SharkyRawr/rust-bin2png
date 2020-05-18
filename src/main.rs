@@ -3,7 +3,7 @@ extern crate image;
 use image::{Rgb};
 use std::env;
 use std::path::Path;
-use std::io::Read;
+use std::io::{Read, BufReader, Error};
 
 
 fn print_help() {
@@ -11,7 +11,7 @@ fn print_help() {
     println!("Requires one argument:\tinfile - File to convert to PNG");
 }
 
-fn main() {
+fn main() -> Result<(),std::io::Error> {
     println!("Hello, world!");
 
     if env::args().len() <= 1 {
@@ -26,11 +26,9 @@ fn main() {
 
     println!("Trying to read '{}' ...", infilepath.display());
 
-    let mut infile = match std::fs::File::open(infilepath) {
-        Err(why) => panic!("couldn't open '{}': {}", infilepath.display(),
-                                                   why),
-        Ok(infile) => infile,
-    };
+    let infile = std::fs::File::open(infilepath)?;
+    #[allow(non_snake_case)]
+    let mut infileReader = std::io::BufReader::new(&infile);
 
     let filelen = infile.metadata().unwrap().len();
     println!("Filelen is {} bytes ...", filelen);
@@ -50,11 +48,11 @@ fn main() {
 
     for y in 0..height {
         for x in 0..width {
-            infile.read(&mut buf).expect("read failed");
+            infileReader.read(&mut buf).expect("read failed");
             img.put_pixel(x, y, Rgb(buf));
         }
     }
 
     img.save(outfilepath).expect("Image saved!");
-    
+    Ok(())
 }
