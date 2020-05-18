@@ -3,7 +3,7 @@ extern crate image;
 use image::{Rgb};
 use std::env;
 use std::path::Path;
-use std::io::{Read, BufReader, Error};
+use std::io::Read;
 
 
 fn print_help() {
@@ -34,11 +34,11 @@ fn main() -> Result<(),std::io::Error> {
     println!("Filelen is {} bytes ...", filelen);
 
     
-    let root = (filelen as f64 / 3.0f64).sqrt();
+    let root = ((filelen / 3) as f64).sqrt();
     let width = root.floor() as u32; // truncate me daddy
     let height = width;
-    if width != root as u32 {
-        println!("!! Warning: Resulting image not perfectly square, data will be truncated!\n");
+    if width as f64 != root {
+        println!("!! Warning: Input data does not fit perfectly in a square, data will be truncated!");
     }
     println!("Image size is: {}x{}", width, height);
 
