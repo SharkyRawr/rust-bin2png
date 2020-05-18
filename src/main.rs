@@ -53,6 +53,6 @@ fn main() -> Result<(),std::io::Error> {
         }
     }
 
-    img.save(outfilepath).expect("Image saved!");
+    img.save(outfilepath).expect("unable to save image?");
     Ok(())
 }
