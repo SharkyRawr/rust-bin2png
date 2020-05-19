@@ -1,6 +1,8 @@
 extern crate image;
-
 use image::{Rgb};
+
+use indicatif::{ProgressBar, ProgressStyle};
+
 use std::env;
 use std::path::Path;
 use std::io::Read;
@@ -51,15 +53,22 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
     let mut buf: [u8; 3] = [0; 3];
 
     let start_instant = Instant::now();
+    let pb = ProgressBar::new(filelen);
+    pb.set_style(ProgressStyle::default_bar()
+        .template("[{elapsed_precise}] {bar:40.cyan/blue} {bytes:>7}/{total_bytes:7} eta {eta} {msg}")
+        .progress_chars("##-"));
+
     for y in 0..height {
         for x in 0..width {
             infile_reader.read(&mut buf).expect("read failed");
             img.put_pixel(x, y, Rgb(buf));
         }
+        pb.inc(width as u64*3);
     }
 
     println!("Writing image to '{}' ...", outfilepath);
     img.save(outfilepath).expect("unable to save image?");
+    pb.finish();
     println!("Done! Took {:?}.", start_instant.elapsed());
     Ok(())
 }
