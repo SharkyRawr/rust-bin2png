@@ -55,7 +55,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
     let start_instant = Instant::now();
     let pb = ProgressBar::new(filelen);
     pb.set_style(ProgressStyle::default_bar()
-        .template("[{elapsed_precise}] {bar:40.cyan/blue} {bytes:>7}/{total_bytes:7} eta {eta} {msg}")
+        .template("[{elapsed_precise}] {bar:40.cyan/blue} {bytes:>7}/{total_bytes:7} @ {bytes_per_sec} eta {eta} {msg}")
         .progress_chars("##-"));
 
     for y in 0..height {
@@ -65,10 +65,10 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
         }
         pb.inc(width as u64*3);
     }
+    pb.finish();
 
     println!("Writing image to '{}' ...", outfilepath);
-    img.save(outfilepath).expect("unable to save image?");
-    pb.finish();
+    img.save(outfilepath).expect("unable to save image?");    
     println!("Done! Took {:?}.", start_instant.elapsed());
     Ok(())
 }
