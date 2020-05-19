@@ -4,6 +4,7 @@ use image::{Rgb};
 use std::env;
 use std::path::Path;
 use std::io::Read;
+use std::time::Instant;
 
 
 fn print_help() {
@@ -42,9 +43,9 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
     println!("Image size is: {}x{}", width, height);
 
     let mut img = image::RgbImage::new(width, height);
-    
     let mut buf: [u8; 3] = [0; 3];
 
+    let start_instant = Instant::now();
     for y in 0..height {
         for x in 0..width {
             infile_reader.read(&mut buf).expect("read failed");
@@ -54,6 +55,6 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
 
     println!("Writing image to '{}' ...", outfilepath.to_str().unwrap());
     img.save(outfilepath).expect("unable to save image?");
-    println!("Done!");
+    println!("Done! Took {:?}.", start_instant.elapsed());
     Ok(())
 }
