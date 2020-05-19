@@ -9,7 +9,8 @@ use std::time::Instant;
 
 fn print_help() {
     println!("rust-bin2png {} - by Sophie 'Sharky' Schumann", env!("CARGO_PKG_VERSION"));
-    println!("Requires one argument:\tinfile - File to convert to PNG");
+    println!("Requires one argument:\t  infile  - File to convert to PNG");
+    println!("Optional second argument: outfile - Filename/path to save as, will always be PNG");
 }
 
 fn main() -> Result<(),Box<dyn std::error::Error>> {
@@ -23,7 +24,11 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
 
     let infilepath = Path::new(&args[1]);
-    let outfilepath = infilepath.with_extension("png");
+    let mut outfilepath: String = String::from(infilepath.with_extension("png").to_str().unwrap());
+
+    if env::args().len() == 3 {
+        outfilepath = String::from(Path::new(&args[2]).with_extension("png").to_str().unwrap());
+    }
 
     println!("Trying to read '{}' ...", infilepath.display());
 
@@ -53,7 +58,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
         }
     }
 
-    println!("Writing image to '{}' ...", outfilepath.to_str().unwrap());
+    println!("Writing image to '{}' ...", outfilepath);
     img.save(outfilepath).expect("unable to save image?");
     println!("Done! Took {:?}.", start_instant.elapsed());
     Ok(())
